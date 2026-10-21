@@ -1,14 +1,14 @@
 // Sistema de download integrado: baixa um .zip (port/recomp) com barra de
 // progresso, extrai e registra na biblioteca automaticamente.
 
-const fs = require('fs')
-const path = require('path')
-const https = require('https')
-const http = require('http')
-const { app } = require('electron')
-const extractZip = require('extract-zip')
-const { scanFolder } = require('./scanner')
-const { load, save } = require('./store')
+import fs from 'fs'
+import path from 'path'
+import https from 'https'
+import http from 'http'
+import { app } from 'electron'
+import extractZip from 'extract-zip'
+import { scanFolder } from './scanner.js'
+import { load, save } from './store.js'
 
 const DOWNLOAD_DIR = path.join(app.getPath('downloads'), 'PortVault')
 
@@ -58,7 +58,7 @@ function downloadFile(url, destPath, onProgress) {
  * Fluxo completo: baixa o zip, extrai numa pasta e adiciona os .exe
  * encontrados na biblioteca. onProgress recebe updates de status.
  */
-async function downloadAndInstall(url, onProgress) {
+export async function downloadAndInstall(url, onProgress) {
   ensureDownloadDir()
 
   const fileName = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'jogo.zip')
@@ -99,4 +99,4 @@ async function downloadAndInstall(url, onProgress) {
   return { added, extractDir }
 }
 
-module.exports = { downloadAndInstall, DOWNLOAD_DIR }
+export { DOWNLOAD_DIR }

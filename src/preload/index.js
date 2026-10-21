@@ -1,7 +1,10 @@
 // A ponte segura: expõe funções do "cérebro" para a interface usar.
 // A interface NÃO tem acesso direto ao Node.js (isso é importante por segurança).
+//
+// Também em ESM, pelo mesmo motivo do processo principal: o bundler precisa
+// seguir os `require`/`import` pra juntar tudo num arquivo só.
 
-const { contextBridge, ipcRenderer } = require('electron')
+import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('api', {
   // Biblioteca

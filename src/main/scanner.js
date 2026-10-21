@@ -1,8 +1,8 @@
 // Varre pastas em busca de executáveis de jogo (ports e recomps baixados).
 // Muitos ports são um .zip que, ao extrair, vira uma pasta com o .exe do jogo.
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
 // Nomes de executáveis que NÃO são jogos (instaladores, launchers internos etc.)
 const IGNORED_EXE = [
@@ -27,7 +27,7 @@ function isIgnoredExe(name) {
  * os executáveis que parecem ser jogos.
  * Retorna: [{ name, exePath, coverPath }]
  */
-function scanFolder(root, maxDepth = 3) {
+export function scanFolder(root, maxDepth = 3) {
   const results = []
 
   // Procura também uma imagem de capa ao lado do exe (folder.png, cover.png, etc.)
@@ -70,5 +70,3 @@ function scanFolder(root, maxDepth = 3) {
   walk(root, 0)
   return results
 }
-
-module.exports = { scanFolder }

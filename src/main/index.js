@@ -1,12 +1,16 @@
 // Ponto de entrada do Electron. Cria a janela e conecta tudo via IPC
 // (a ponte de mensagens entre o "cérebro" e a interface).
+//
+// IMPORTANTE: este processo usa ESM (import/export) de propósito.
+// O bundler (Rollup) só consegue empacotar os arquivos juntos seguindo
+// `import` — se usássemos require(), os módulos ficariam de fora do build.
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
-const path = require('path')
-const { load, save } = require('./store')
-const { scanFolder } = require('./scanner')
-const { launchGame, openGameFolder } = require('./launcher')
-const { downloadAndInstall } = require('./downloader')
+import path from 'path'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { load, save } from './store.js'
+import { scanFolder } from './scanner.js'
+import { launchGame, openGameFolder } from './launcher.js'
+import { downloadAndInstall } from './downloader.js'
 
 function createWindow() {
   const win = new BrowserWindow({

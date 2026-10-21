@@ -2,9 +2,9 @@
 // Guarda: pastas monitoradas, biblioteca de jogos e histórico de downloads.
 // Em versões futuras isso pode virar SQLite sem mudar o resto do app.
 
-const path = require('path')
-const fs = require('fs')
-const { app } = require('electron')
+import path from 'path'
+import fs from 'fs'
+import { app } from 'electron'
 
 const DATA_DIR = path.join(app.getPath('userData'), 'portvault')
 const DATA_FILE = path.join(DATA_DIR, 'library.json')
@@ -22,7 +22,7 @@ function ensureDir() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true })
 }
 
-function load() {
+export function load() {
   try {
     return { ...DEFAULT_DATA, ...JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')) }
   } catch {
@@ -30,14 +30,12 @@ function load() {
   }
 }
 
-function save(data) {
+export function save(data) {
   ensureDir()
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2))
 }
 
-function getImagesDir() {
+export function getImagesDir() {
   ensureDir()
   return DATA_DIR
 }
-
-module.exports = { load, save, getImagesDir }
