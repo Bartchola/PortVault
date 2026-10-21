@@ -1,0 +1,34 @@
+# Cria o instalador do Windows automaticamente toda vez que você criar uma tag (ex: v0.1.0)
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar instalador
+        run: npm run dist
+
+      - name: Publicar na Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe
+          draft: false
+          prerelease: false
+          generate_release_notes: true
