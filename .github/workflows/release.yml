@@ -5,6 +5,11 @@ on:
   push:
     tags: ['v*']
 
+# Permissão de escrita: o passo "Publicar na Release" precisa criar a Release
+# e subir os .exe. Sem isso o GitHub dá apenas "Contents: read" e falha.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest

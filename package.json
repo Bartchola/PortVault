@@ -9,8 +9,8 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "dist": "electron-vite build && electron-builder --win",
-    "dist:portable": "electron-vite build && electron-builder --win portable"
+    "dist": "electron-vite build && electron-builder --win --publish never",
+    "dist:portable": "electron-vite build && electron-builder --win --publish never portable"
   },
   "dependencies": {
     "extract-zip": "^2.0.1"
