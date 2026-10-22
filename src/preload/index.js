@@ -24,5 +24,10 @@ contextBridge.exposeInMainWorld('api', {
   startDownload: (url) => ipcRenderer.invoke('downloads:start', url),
   onDownloadProgress: (callback) => {
     ipcRenderer.on('downloads:progress', (_e, data) => callback(data))
-  }
+  },
+
+  // Versão e atualizações
+  getVersion: () => ipcRenderer.invoke('app:version'),
+  checkForUpdates: () => ipcRenderer.invoke('updates:check'),
+  openReleasePage: () => ipcRenderer.invoke('updates:open')
 })

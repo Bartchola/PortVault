@@ -128,6 +128,57 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 }
 .folder-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 
+/* ---------- Configurações ---------- */
+.settings-section { margin-bottom: 30px; }
+.settings-section h2 { font-size: 17px; margin-bottom: 14px; font-weight: 600; }
+
+.setting-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 20px; display: flex; justify-content: space-between;
+  align-items: center; gap: 16px;
+}
+.setting-label { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+.setting-value { font-size: 16px; font-weight: 600; }
+.setting-desc { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+/* Status da checagem de atualização */
+.update-status {
+  margin-top: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.update-status-icon { font-size: 22px; }
+.update-status.update { border-color: var(--accent); }
+.update-status.uptodate { border-color: #2ecc71; }
+.update-status.error { border-color: var(--danger); }
+.update-status-text { font-weight: 600; font-size: 14px; }
+.update-status-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.update-status .btn { margin-left: auto; }
+
+/* ---------- Pop-up de atualização ---------- */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; backdrop-filter: blur(3px);
+}
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; max-width: 420px; width: 90%;
+  text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal-icon { font-size: 48px; margin-bottom: 12px; }
+.modal h2 { font-size: 22px; margin-bottom: 14px; }
+.modal-versions { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+.badge {
+  padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 700;
+}
+.badge.installed { background: var(--surface-2); color: var(--muted); }
+.badge.latest { background: var(--accent); color: #fff; }
+.arrow { color: var(--muted); font-size: 18px; }
+.modal-text { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.modal-actions .btn { flex: 1; }
+
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -11,6 +11,7 @@ import { load, save } from './store.js'
 import { scanFolder } from './scanner.js'
 import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
+import { checkForUpdates, openReleasePage } from './updater.js'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -120,6 +121,17 @@ ipcMain.handle('folders:scan', () => {
   save(data)
   return { games: data.games, added }
 })
+
+// ---------- IPC: versão e atualizações ----------
+
+// Devolve a versão real do package.json pro launcher sempre mostrar certo
+ipcMain.handle('app:version', () => app.getVersion())
+
+// Checa se existe release mais nova no GitHub
+ipcMain.handle('updates:check', () => checkForUpdates())
+
+// Abre a página da release no navegador (botão "Atualizar")
+ipcMain.handle('updates:open', () => openReleasePage())
 
 // ---------- IPC: downloads ----------
 
