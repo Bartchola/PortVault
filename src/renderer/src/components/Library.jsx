@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
-// Capa fallback: gera uma cor consistente por nome + as iniciais
-function FallbackCover({ name }) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  const hue = Math.abs(hash) % 360
-  const initials = name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
-  return (
-    <div className="cover-fallback" style={{ background: `linear-gradient(135deg, hsl(${hue},60%,30%), hsl(${(hue + 60) % 360},60%,18%))` }}>
-      <span>{initials}</span>
-    </div>
-  )
-}
+import Cover from './Cover'
 
 export default function Library() {
   const [games, setGames] = useState([])
@@ -66,7 +54,7 @@ export default function Library() {
             <div className="cover">
               {game.coverPath
                 ? <img src={`file://${game.coverPath}`} alt={game.name} />
-                : <FallbackCover name={game.name} />}
+                : <Cover name={game.name} />}
               <button className="play-btn" title="Jogar" onClick={() => handleLaunch(game)}>▶</button>
             </div>
             <div className="card-body">

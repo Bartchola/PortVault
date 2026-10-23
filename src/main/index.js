@@ -12,6 +12,7 @@ import { scanFolder } from './scanner.js'
 import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
 import { checkForUpdates, openReleasePage } from './updater.js'
+import { listAchievements, addAchievement, removeAchievement, toggleAchievement } from './achievements.js'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -85,6 +86,16 @@ ipcMain.handle('library:openFolder', (_e, id) => {
   const game = load().games.find((g) => g.id === id)
   if (game) openGameFolder(game)
 })
+
+// ---------- IPC: conquistas ----------
+
+ipcMain.handle('achievements:list', () => listAchievements())
+
+ipcMain.handle('achievements:add', (_e, gameId, payload) => addAchievement(gameId, payload))
+
+ipcMain.handle('achievements:remove', (_e, gameId, achId) => removeAchievement(gameId, achId))
+
+ipcMain.handle('achievements:toggle', (_e, gameId, achId) => toggleAchievement(gameId, achId))
 
 // ---------- IPC: pastas monitoradas ----------
 

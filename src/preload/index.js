@@ -26,6 +26,12 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('downloads:progress', (_e, data) => callback(data))
   },
 
+  // Conquistas
+  listAchievements: () => ipcRenderer.invoke('achievements:list'),
+  addAchievement: (gameId, payload) => ipcRenderer.invoke('achievements:add', gameId, payload),
+  removeAchievement: (gameId, achId) => ipcRenderer.invoke('achievements:remove', gameId, achId),
+  toggleAchievement: (gameId, achId) => ipcRenderer.invoke('achievements:toggle', gameId, achId),
+
   // Versão e atualizações
   getVersion: () => ipcRenderer.invoke('app:version'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),

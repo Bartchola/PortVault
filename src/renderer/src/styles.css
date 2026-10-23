@@ -155,6 +155,84 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .update-status-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
 .update-status .btn { margin-left: auto; }
 
+/* ---------- Conquistas ---------- */
+.ach-summary {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 22px; margin-bottom: 24px;
+}
+.ach-summary-info { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.ach-summary-num { font-size: 28px; font-weight: 800; color: var(--accent); }
+.ach-summary-total { font-size: 14px; color: var(--muted); }
+.ach-summary-bar { flex: 1; height: 10px; }
+.ach-summary-pct { font-size: 15px; font-weight: 700; min-width: 44px; text-align: right; }
+
+.ach-games { display: flex; flex-direction: column; gap: 12px; }
+
+.ach-game { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+.ach-game-head {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  background: none; border: none; color: var(--text);
+  padding: 14px 16px; cursor: pointer; text-align: left; transition: background 0.15s;
+}
+.ach-game-head:hover { background: var(--surface-2); }
+
+.ach-game-cover {
+  width: 46px; height: 46px; border-radius: 8px; overflow: hidden;
+  flex-shrink: 0; background: var(--surface-2);
+}
+.ach-game-cover img { width: 100%; height: 100%; object-fit: cover; }
+.ach-game-cover .cover-fallback { font-size: 16px; }
+
+.ach-game-info { flex: 1; min-width: 0; }
+.ach-game-name { font-size: 15px; font-weight: 600; margin-bottom: 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ach-game-bar { height: 6px; }
+
+.ach-game-count { font-size: 14px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.ach-chevron { color: var(--muted); font-size: 16px; transition: transform 0.2s; }
+.ach-chevron.open { transform: rotate(180deg); }
+
+.ach-list { border-top: 1px solid var(--border); padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.ach-empty-game { padding: 8px 0; }
+
+.ach-row {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px;
+}
+.ach-row.unlocked { border-color: var(--accent); }
+
+.ach-icon {
+  position: relative; width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border);
+}
+.ach-row.unlocked .ach-icon { background: rgba(108, 92, 231, 0.18); border-color: var(--accent); }
+.ach-icon-emoji { font-size: 22px; }
+.ach-row.locked .ach-icon-emoji { filter: grayscale(1); opacity: 0.5; }
+.ach-lock { position: absolute; bottom: -4px; right: -4px; font-size: 13px; }
+
+.ach-info { flex: 1; min-width: 0; }
+.ach-name { font-size: 14px; font-weight: 600; }
+.ach-row.locked .ach-name { color: var(--muted); }
+.ach-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.ach-date { font-size: 12px; color: var(--accent); margin-top: 4px; }
+
+.ach-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.ach-form { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.ach-form input {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 9px 12px; border-radius: 8px; font-size: 13px;
+}
+.ach-form input:focus { outline: none; border-color: var(--accent); }
+.ach-form-icon { width: 52px; text-align: center; font-size: 18px; }
+.ach-form-name { flex: 1; min-width: 160px; }
+.ach-form-desc { flex: 2; min-width: 200px; }
+
+.ach-add-btn { align-self: flex-start; margin-top: 4px; }
+
 /* ---------- Pop-up de atualização ---------- */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);

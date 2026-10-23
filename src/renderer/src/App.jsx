@@ -3,13 +3,15 @@ import Library from './components/Library'
 import Downloads from './components/Downloads'
 import Folders from './components/Folders'
 import Settings from './components/Settings'
+import Achievements from './components/Achievements'
 import UpdateModal from './components/UpdateModal'
 
 // Ícones em emoji pra não depender de biblioteca externa no MVP
-const ICONS = { library: '🎮', downloads: '⬇️', folders: '📁', settings: '⚙️' }
+const ICONS = { library: '🎮', achievements: '🏆', downloads: '⬇️', folders: '📁', settings: '⚙️' }
 
 const TABS = [
   ['library', 'Biblioteca'],
+  ['achievements', 'Conquistas'],
   ['downloads', 'Downloads'],
   ['folders', 'Pastas'],
   ['settings', 'Configurações']
@@ -66,6 +68,7 @@ export default function App() {
 
       <main className="content">
         {tab === 'library' && <Library />}
+        {tab === 'achievements' && <Achievements />}
         {tab === 'downloads' && <Downloads onInstalled={() => setTab('library')} />}
         {tab === 'folders' && <Folders />}
         {tab === 'settings' && <Settings />}
