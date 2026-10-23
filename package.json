@@ -10,8 +10,8 @@
     "test": "node test-updater.js",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "dist": "electron-vite build && electron-builder --win --publish never",
-    "dist:portable": "electron-vite build && electron-builder --win --publish never portable"
+    "dist": "rimraf dist && electron-vite build && electron-builder --win --publish never",
+    "dist:portable": "rimraf dist && electron-vite build && electron-builder --win --publish never portable"
   },
   "dependencies": {
     "extract-zip": "^2.0.1"
@@ -23,6 +23,7 @@
     "electron-vite": "^2.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "rimraf": "^6.1.3",
     "vite": "^5.4.11"
   },
   "build": {
