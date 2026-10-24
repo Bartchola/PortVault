@@ -8,10 +8,17 @@ const STATUS = {
   idle: { icon: '🔍', text: 'Clique para verificar se há novas versões.' }
 }
 
-export default function Settings() {
+// `updater` vem do App (compartilha o progresso do download com o pop-up).
+export default function Settings({ updater }) {
   const [status, setStatus] = useState('idle')
   const [info, setInfo] = useState(null)
   const [version, setVersion] = useState('...')
+
+  const phase = updater?.phase || 'idle'
+  const progress = updater?.progress || 0
+  const downloading = phase === 'downloading'
+  const installing = phase === 'installing'
+  const failed = phase === 'error' && status === 'update'
 
   // Busca a versão real (do package.json) pra mostrar sempre correta
   useEffect(() => {
@@ -35,6 +42,8 @@ export default function Settings() {
   }
 
   const currentStatus = STATUS[status]
+  // Ícone muda conforme o que está acontecendo agora
+  const icon = downloading ? '⬇️' : installing ? '⚙️' : failed ? '⚠️' : currentStatus.icon
 
   return (
     <div>
@@ -50,31 +59,55 @@ export default function Settings() {
             <p className="setting-label">Versão instalada</p>
             <p className="setting-value">v{version}</p>
           </div>
-          <button className="btn primary" onClick={handleCheck} disabled={status === 'checking'}>
+          <button className="btn primary" onClick={handleCheck} disabled={status === 'checking' || downloading || installing}>
             {status === 'checking' ? 'Verificando...' : 'Verificar atualização'}
           </button>
         </div>
 
-        {/* Resultado da verificação */}
+        {/* Resultado da verificação / progresso do download */}
         {status !== 'idle' && (
-          <div className={`update-status ${status}`}>
-            <span className="update-status-icon">{currentStatus.icon}</span>
-            <div>
-              <p className="update-status-text">{currentStatus.text}</p>
-              {info?.latestVersion && (
-                <p className="update-status-detail">
-                  Última versão disponível: <b>v{info.latestVersion}</b>
-                </p>
-              )}
-              {status === 'error' && info?.error && (
-                <p className="update-status-detail muted">{info.error}</p>
+          <div className={`update-status ${failed ? 'error' : downloading || installing ? 'update' : status}`}>
+            <span className="update-status-icon">{icon}</span>
+            <div className="update-status-main">
+              {downloading ? (
+                <>
+                  <p className="update-status-text">Baixando nova versão...</p>
+                  <div className="progress-bar update-progress">
+                    <div className="progress-fill" style={{ width: `${progress}%` }} />
+                  </div>
+                </>
+              ) : installing ? (
+                <p className="update-status-text">Instalando... o launcher vai reabrir sozinho.</p>
+              ) : failed ? (
+                <>
+                  <p className="update-status-text">Falha no download da atualização.</p>
+                  <p className="update-status-detail muted">Verifique sua conexão e tente de novo.</p>
+                </>
+              ) : (
+                <>
+                  <p className="update-status-text">{currentStatus.text}</p>
+                  {info?.latestVersion && (
+                    <p className="update-status-detail">
+                      Última versão disponível: <b>v{info.latestVersion}</b>
+                    </p>
+                  )}
+                  {status === 'error' && info?.error && (
+                    <p className="update-status-detail muted">{info.error}</p>
+                  )}
+                </>
               )}
             </div>
-            {status === 'update' && (
-              <button className="btn primary" onClick={() => window.api.openReleasePage()}>
-                ⬇ Atualizar
-              </button>
-            )}
+
+            {/* Ação à direita */}
+            {downloading ? (
+              <button className="btn" disabled>{progress}%</button>
+            ) : installing ? (
+              <button className="btn" disabled>Instalando...</button>
+            ) : failed ? (
+              <button className="btn primary" onClick={updater.start}>↻ Tentar de novo</button>
+            ) : status === 'update' ? (
+              <button className="btn primary" onClick={updater.start}>⬇ Atualizar</button>
+            ) : null}
           </div>
         )}
       </section>

@@ -153,6 +153,8 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .update-status.error { border-color: var(--danger); }
 .update-status-text { font-weight: 600; font-size: 14px; }
 .update-status-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.update-status-main { flex: 1; min-width: 0; }
+.update-progress { margin-top: 8px; height: 6px; }
 .update-status .btn { margin-left: auto; }
 
 /* ---------- Conquistas ---------- */
@@ -254,6 +256,13 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .badge.latest { background: var(--accent); color: #fff; }
 .arrow { color: var(--muted); font-size: 18px; }
 .modal-text { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+.modal-error { color: var(--danger); }
+
+/* Progresso do download dentro do pop-up */
+.modal-download { margin-bottom: 24px; }
+.modal-download .modal-text { margin-bottom: 10px; }
+.modal-download .progress-bar { height: 10px; }
+.modal-progress-pct { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
 .modal-actions { display: flex; gap: 10px; justify-content: center; }
 .modal-actions .btn { flex: 1; }
 

@@ -20,30 +20,59 @@ const TABS = [
 export default function App() {
   const [tab, setTab] = useState('library')
   const [version, setVersion] = useState('...')
-  const [updateInfo, setUpdateInfo] = useState(null)
+  const [updateInfo, setUpdateInfo] = useState(null) // dados pro pop-up (versão disponível)
+  const [upPhase, setUpPhase] = useState('idle') // idle | downloading | installing | error
+  const [upProgress, setUpProgress] = useState(0) // 0-100 durante o download
 
   // Busca a versão real (do package.json) pro rodapé nunca dessincronizar
   useEffect(() => {
     window.api.getVersion().then(setVersion)
   }, [])
 
+  // Registrados UMA vez: recebem os eventos do updater lá no processo principal
+  useEffect(() => {
+    const offs = [
+      window.api.onUpdaterProgress((p) => {
+        setUpProgress(Math.round(p?.percent || 0))
+        setUpPhase('downloading')
+      }),
+      window.api.onUpdaterDownloaded(() => {
+        // Download pronto: instala na hora de forma silenciosa e reabre
+        setUpPhase('installing')
+        try { window.api.installUpdate() } catch { setUpPhase('error') }
+      }),
+      window.api.onUpdaterError(() => setUpPhase('error'))
+    ]
+    return () => offs.forEach((off) => off && off())
+  }, [])
+
   // Checa atualização automaticamente ao abrir o launcher
   useEffect(() => {
     let cancelled = false
-
     async function check() {
       const result = await window.api.checkForUpdates()
-      // Só mostra o pop-up se achou versão mais nova. Erros de rede
-      // são ignorados na abertura pra não incomodar (dá pra checar
-      // manualmente na aba Configurações).
-      if (!cancelled && result.ok && result.hasUpdate) {
-        setUpdateInfo(result)
-      }
+      // Só mostra o pop-up se achou versão mais nova. Erros de rede são
+      // ignorados na abertura pra não incomodar (dá pra checar em Configurações).
+      if (!cancelled && result.ok && result.hasUpdate) setUpdateInfo(result)
     }
-
     check()
     return () => { cancelled = true }
   }, [])
+
+  // Inicia o download da nova versão (o progresso chega pelos eventos acima)
+  function startUpdate() {
+    setUpProgress(0)
+    setUpPhase('downloading')
+    window.api.downloadUpdate().catch(() => setUpPhase('error'))
+  }
+
+  const updater = {
+    info: updateInfo,
+    phase: upPhase,
+    progress: upProgress,
+    start: startUpdate,
+    dismiss: () => setUpdateInfo(null)
+  }
 
   return (
     <div className="app">
@@ -71,11 +100,11 @@ export default function App() {
         {tab === 'achievements' && <Achievements />}
         {tab === 'downloads' && <Downloads onInstalled={() => setTab('library')} />}
         {tab === 'folders' && <Folders />}
-        {tab === 'settings' && <Settings />}
+        {tab === 'settings' && <Settings updater={updater} />}
       </main>
 
       {/* Pop-up de nova versão, se houver atualização disponível */}
-      <UpdateModal info={updateInfo} onDismiss={() => setUpdateInfo(null)} />
+      <UpdateModal updater={updater} />
     </div>
   )
 }

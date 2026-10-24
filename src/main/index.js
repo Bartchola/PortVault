@@ -11,7 +11,7 @@ import { load, save } from './store.js'
 import { scanFolder } from './scanner.js'
 import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
-import { checkForUpdates, openReleasePage } from './updater.js'
+import { checkForUpdates, downloadUpdate, installUpdate, openReleasePage } from './updater.js'
 import { listAchievements, addAchievement, removeAchievement, toggleAchievement } from './achievements.js'
 
 function createWindow() {
@@ -140,6 +140,12 @@ ipcMain.handle('app:version', () => app.getVersion())
 
 // Checa se existe release mais nova no GitHub
 ipcMain.handle('updates:check', () => checkForUpdates())
+
+// Baixa a nova versão dentro do launcher (barra de progresso via eventos)
+ipcMain.handle('updates:download', () => downloadUpdate())
+
+// Instala a versão baixada de forma silenciosa e reabre o app
+ipcMain.handle('updates:install', () => installUpdate())
 
 // Abre a página da release no navegador (botão "Atualizar")
 ipcMain.handle('updates:open', () => openReleasePage())

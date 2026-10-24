@@ -32,8 +32,13 @@ jobs:
       - name: Publicar na Release
         uses: softprops/action-gh-release@v2
         with:
+          # *.exe = instaladores; *.blockmap + latest.yml = usados pelo
+          # electron-updater pra baixar atualizações dentro do launcher
+          # (o blockmap permite download diferencial = mais rápido).
           files: |
             dist/*.exe
+            dist/*.blockmap
+            dist/latest.yml
           draft: false
           prerelease: false
           generate_release_notes: true

@@ -35,5 +35,23 @@ contextBridge.exposeInMainWorld('api', {
   // Versão e atualizações
   getVersion: () => ipcRenderer.invoke('app:version'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),
-  openReleasePage: () => ipcRenderer.invoke('updates:open')
+  downloadUpdate: () => ipcRenderer.invoke('updates:download'),
+  installUpdate: () => ipcRenderer.invoke('updates:install'),
+  openReleasePage: () => ipcRenderer.invoke('updates:open'),
+  // Cada onUpdater* devolve uma função pra remover o listener (evita acúmulo)
+  onUpdaterProgress: (callback) => {
+    const handler = (_e, data) => callback(data)
+    ipcRenderer.on('updater:progress', handler)
+    return () => ipcRenderer.removeListener('updater:progress', handler)
+  },
+  onUpdaterDownloaded: (callback) => {
+    const handler = (_e, data) => callback(data)
+    ipcRenderer.on('updater:downloaded', handler)
+    return () => ipcRenderer.removeListener('updater:downloaded', handler)
+  },
+  onUpdaterError: (callback) => {
+    const handler = (_e, data) => callback(data)
+    ipcRenderer.on('updater:error', handler)
+    return () => ipcRenderer.removeListener('updater:error', handler)
+  }
 })
