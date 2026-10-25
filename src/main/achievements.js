@@ -93,6 +93,9 @@ export function listAchievements() {
     id: g.id,
     name: g.name,
     coverPath: g.coverPath,
+    // Vínculo com o RetroAchievements — o renderer precisa saber quais
+    // jogos podem sincronizar desbloqueios
+    raGameId: g.raGameId || null,
     achievements: (g.achievements || []).map((a) => ({ ...a }))
   }))
 

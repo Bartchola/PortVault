@@ -13,7 +13,7 @@ import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
 import { checkForUpdates, downloadUpdate, installUpdate, openReleasePage } from './updater.js'
 import { listAchievements, addAchievement, removeAchievement, toggleAchievement } from './achievements.js'
-import { verifyAccount, getConsoles, searchGames, importAchievements, getGameAchievements, backfillTranslations } from './ra.js'
+import { verifyAccount, getConsoles, searchGames, importAchievements, getGameAchievements, backfillTranslations, syncUnlocks } from './ra.js'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -122,6 +122,10 @@ ipcMain.handle('ra:search', (_e, query, consoleId) => searchGames(query, console
 
 // Substitui as conquistas de um jogo pelas oficiais do RA
 ipcMain.handle('ra:import', (_e, gameId, raGameId) => importAchievements(gameId, raGameId))
+
+// Importa os desbloqueios que o usuário já tem no RetroAchievements
+// (precisa do username salvo nas configurações)
+ipcMain.handle('ra:sync', (_e, gameId, raGameId) => syncUnlocks(gameId, raGameId))
 
 // Prévia: busca as conquistas de um jogo do RA sem salvar (mostra o total)
 ipcMain.handle('ra:preview', (_e, raGameId) => getGameAchievements(raGameId))

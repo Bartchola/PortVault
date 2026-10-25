@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld('api', {
   raSearch: (query, consoleId) => ipcRenderer.invoke('ra:search', query, consoleId),
   raPreview: (raGameId) => ipcRenderer.invoke('ra:preview', raGameId),
   raImport: (gameId, raGameId) => ipcRenderer.invoke('ra:import', gameId, raGameId),
+  raSync: (gameId, raGameId) => ipcRenderer.invoke('ra:sync', gameId, raGameId),
 
   // Idioma do launcher
   getLocale: () => ipcRenderer.invoke('locale:get'),

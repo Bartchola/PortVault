@@ -161,6 +161,8 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .ra-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 14px; }
 .ra-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
 .ra-field label { font-size: 12px; color: var(--muted); }
+/* Nota embaixo do formulário do RetroAchievements */
+.ra-form-hint { margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.4; }
 .ra-status { margin-top: 12px; font-size: 13px; }
 .ra-status.ok { color: #3fb950; }
 .ra-status.error { color: var(--danger); }
@@ -267,6 +269,10 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .ach-form-desc { flex: 2; min-width: 200px; }
 
 .ach-add-btn { align-self: flex-start; margin-top: 4px; }
+
+/* Barra da sincronização com o RetroAchievements */
+.ach-sync { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.ach-sync-hint { color: var(--muted); font-size: 12px; }
 
 /* ---------- Pop-up de atualização ---------- */
 .modal-overlay {

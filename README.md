@@ -14,7 +14,7 @@ O PortVault organiza os ports e recomps que você baixa da comunidade em um só 
 - ⬇️ **Download integrado** — cola o link direto de um port (`.zip`/`.exe`), ele baixa, extrai e adiciona à biblioteca sozinho.
 - 📁 **Pastas monitoradas** — aponte onde estão seus jogos e escaneie para encontrar novos ports automaticamente.
 - 🏆 **Conquistas estilo Steam** — desbloqueie manualmente e acompanhe o progresso de cada jogo, com resumo geral.
-- 🕹️ **RetroAchievements integrado** — vincule o jogo ao RA por busca ou link e importe as conquistas oficiais, com badges e pontos.
+- 🕹️ **RetroAchievements integrado** — vincule o jogo ao RA por busca ou link e importe as conquistas oficiais, com badges e pontos. Com o usuário do RA configurado, você também **sincroniza seus desbloqueios** e leva a data real em que cada um foi ganho no emulador.
 - 🌐 **Português e inglês** — troque o idioma do launcher nas Configurações; as conquistas do RA são **traduzidas automaticamente** para o português (e o texto original continua disponível em inglês).
 - 🔄 **Atualização automática** — o launcher detecta a versão nova, baixa com barra de progresso e instala sozinho, sem abrir instalador.
 - 🎨 **Interface escura** estilo launcher, com capas e botão de jogar.
@@ -75,6 +75,7 @@ Basta repetir o passo 2 com uma tag nova (ex: `v0.2.0`) a cada versão.
 - [ ] Catálogo comunitário de ports/recomps (descoberta de jogos novos)
 - [ ] Ícones/capas extraídos automaticamente dos `.exe`
 - [ ] Detecção de emuladores (recomps de N64, PS1, etc.)
+- [ ] Disparo **automático** de conquistas durante o jogo (mexe com engenharia reversa, port por port)
 - [ ] Configurações por jogo (resolução, mods, saves)
 - [ ] Sistema de favoritos e últimas jogadas
 - [ ] Temas de cor

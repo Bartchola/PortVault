@@ -64,6 +64,10 @@ const MESSAGES = {
     'ach.formEmoji': 'Emoji da conquista',
     'ach.formName': 'Nome da conquista',
     'ach.formDesc': 'Descrição (opcional)',
+    'ach.syncRa': '↻ Sincronizar com o RetroAchievements',
+    'ach.syncRaHint': 'Importa o que você já desbloqueou no emulador, com a data real.',
+    'ach.syncRaDone': 'Sincronizadas {n} conquistas novas do RetroAchievements.',
+    'ach.syncRaUptodate': 'Tudo em dia — nada novo no RetroAchievements.',
 
     // ---------- downloads ----------
     'dl.title': 'Downloads',
@@ -114,8 +118,9 @@ const MESSAGES = {
     'settings.raDescC': '.',
     'settings.raKeyWhere': 'retroachievements.org',
     'settings.raKeyWhere2': 'Control Panel → Keys',
-    'settings.raUser': 'Usuário (opcional)',
+    'settings.raUser': 'Usuário',
     'settings.raUserPh': 'Seu usuário do RA',
+    'settings.raUserHint': 'Usuário necessário pra sincronizar seus desbloqueios; pra importar a lista de conquistas, só a chave.',
     'settings.raKey': 'Chave de API *',
     'settings.raKeyPh': 'Chave do Web API',
     'settings.connect': 'Conectar',
@@ -172,6 +177,8 @@ const MESSAGES = {
     'err.ra.emptyKey': 'Chave de API vazia.',
     'err.ra.badResponse': 'Resposta inesperada da API.',
     'err.ra.noAchievements': 'Esse jogo do RA não retornou conquistas.',
+    'err.ra.needUser': 'Preencha seu usuário do RetroAchievements nas Configurações.',
+    'err.ra.notLinked': 'Este jogo ainda não está vinculado ao RetroAchievements.',
     'err.download.http': 'Servidor respondeu {status}.'
   },
 
@@ -223,6 +230,10 @@ const MESSAGES = {
     'ach.formEmoji': 'Achievement emoji',
     'ach.formName': 'Achievement name',
     'ach.formDesc': 'Description (optional)',
+    'ach.syncRa': '↻ Sync with RetroAchievements',
+    'ach.syncRaHint': 'Imports what you already unlocked in the emulator, with the real date.',
+    'ach.syncRaDone': 'Synced {n} new achievements from RetroAchievements.',
+    'ach.syncRaUptodate': 'All up to date — nothing new on RetroAchievements.',
 
     // ---------- downloads ----------
     'dl.title': 'Downloads',
@@ -273,8 +284,9 @@ const MESSAGES = {
     'settings.raDescC': '.',
     'settings.raKeyWhere': 'retroachievements.org',
     'settings.raKeyWhere2': 'Control Panel → Keys',
-    'settings.raUser': 'Username (optional)',
+    'settings.raUser': 'Username',
     'settings.raUserPh': 'Your RA username',
+    'settings.raUserHint': 'Username is required to sync your unlocks; importing the achievement list only needs the key.',
     'settings.raKey': 'API key *',
     'settings.raKeyPh': 'Web API key',
     'settings.connect': 'Connect',
@@ -331,6 +343,8 @@ const MESSAGES = {
     'err.ra.emptyKey': 'Empty API key.',
     'err.ra.badResponse': 'Unexpected response from the API.',
     'err.ra.noAchievements': 'That RA game returned no achievements.',
+    'err.ra.needUser': 'Enter your RetroAchievements username in Settings.',
+    'err.ra.notLinked': 'This game is not linked to RetroAchievements yet.',
     'err.download.http': 'The server responded {status}.'
   }
 }
@@ -351,8 +365,16 @@ export function translate(lang, key, params) {
 // - 'err.ra.http|404'  -> traduz a chave passando 'status'
 // - 'err.ra.noKey'     -> traduz a chave
 // - 'Something failed' -> repassa cru (mensagem de terceiros, ex.: electron-updater)
+//
+// Detalhe importante: quando o processo principal LANÇA um erro, o Electron
+// embrulha a mensagem antes de chegar aqui:
+//   "Error invoking remote method 'ra:sync': Error: err.ra.needUser"
+// Sem tirar esse casaco, nenhuma chave de erro era reconhecida e o usuário
+// via o texto cru. Desembrulhamos aqui pra valer em todos os chamadores.
+const EMBRULHO_IPC = /^Error invoking remote method '[^']*':\s*(?:Error:\s*)?/
+
 export function tr(lang, raw) {
-  const msg = String(raw ?? '')
+  const msg = String(raw ?? '').replace(EMBRULHO_IPC, '')
   const i = msg.indexOf('|')
   if (i > 0) {
     const key = msg.slice(0, i)

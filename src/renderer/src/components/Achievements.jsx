@@ -25,7 +25,9 @@ export default function Achievements() {
   const [expanded, setExpanded] = useState(null) // id do jogo aberto
   const [addingFor, setAddingFor] = useState(null) // id do jogo com formulário aberto
   const [form, setForm] = useState({ icon: '🏆', name: '', desc: '' })
-  const { t, lang } = useI18n()
+  const [syncing, setSyncing] = useState(null) // id do jogo sincronizando agora
+  const [syncMsg, setSyncMsg] = useState(null) // { gameId, k, p?, erro }
+  const { t, tr, lang } = useI18n()
 
   async function refresh() {
     setLoading(true)
@@ -68,6 +70,26 @@ export default function Achievements() {
   function openAdd(gameId) {
     setForm({ icon: '🏆', name: '', desc: '' })
     setAddingFor(gameId)
+  }
+
+  // Puxa do RetroAchievements o que você já desbloqueou naquele jogo
+  async function handleSync(game) {
+    setSyncing(game.id)
+    setSyncMsg(null)
+    try {
+      const r = await window.api.raSync(game.id, game.raGameId)
+      setSyncMsg({
+        gameId: game.id,
+        erro: false,
+        k: r.novas > 0 ? 'ach.syncRaDone' : 'ach.syncRaUptodate',
+        p: { n: r.novas }
+      })
+      // Recarrega tudo: o resumo do topo e as datas mudam junto
+      setData(await window.api.listAchievements())
+    } catch (err) {
+      setSyncMsg({ gameId: game.id, erro: true, k: err.message })
+    }
+    setSyncing(null)
   }
 
   return (
@@ -175,6 +197,29 @@ export default function Achievements() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Sincroniza desbloqueios com o RetroAchievements
+                      (só aparece em jogo vinculado a um id do RA) */}
+                  {game.raGameId ? (
+                    <div className="ach-sync">
+                      <button
+                        className="btn small"
+                        title={t('ach.syncRaHint')}
+                        disabled={syncing === game.id}
+                        onClick={() => handleSync(game)}
+                      >
+                        {syncing === game.id ? t('common.loading') : t('ach.syncRa')}
+                      </button>
+                      <span className="ach-sync-hint">{t('ach.syncRaHint')}</span>
+                    </div>
+                  ) : null}
+
+                  {syncMsg && syncMsg.gameId === game.id && (
+                    <p className={`ra-status ${syncMsg.erro ? 'error' : 'ok'}`}>
+                      {syncMsg.erro ? '⚠️ ' : '✅ '}
+                      {syncMsg.p ? t(syncMsg.k, syncMsg.p) : tr(syncMsg.k)}
+                    </p>
+                  )}
 
                   {/* Formulário para criar conquista */}
                   {addingFor === game.id ? (

@@ -154,6 +154,76 @@ export async function getGameAchievements(raGameId) {
 // Id curto e único (mesmo padrão da biblioteca)
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 
+// Converte a data do RetroAchievements pra ISO completo.
+// Testado ao vivo em dois endpoints: `DateEarned` vem como "2026-10-25 22:32:48"
+// (sem fuso) e corresponde exatamente ao `DateAwarded` "...T22:32:48Z" do outro
+// endpoint — ou seja, é UTC sem marcação. Sem o "Z" o navegador interpretaria
+// como hora local e a data de desbloqueio sairia errada.
+function paraIso(valor) {
+  if (!valor) return null
+  const t = String(valor).trim().replace(' ', 'T')
+  const temFuso = /[Zz]$|[+-]\d{2}:?\d{2}$/.test(t)
+  const d = new Date(temFuso ? t : `${t}Z`)
+  return Number.isNaN(d.getTime()) ? null : d.toISOString()
+}
+
+// Importa pro PortVault os desbloqueios que você JÁ tem no RetroAchievements.
+//
+// Esse é o único dado de progresso real que a API do RA entrega: em
+// `API_GetGameInfoAndUserProgress` cada conquista vem com `DateEarned`
+// (e `DateEarnedHardcore`) — a data em que AQUELE usuário desbloqueou.
+// Precisa do USERNAME salvo nas configurações (a chave sozinha não basta).
+//
+// Regra importante: só LIGA conquistas que o RA diz que estão desbloqueadas.
+// - Conquista criada à mão (sem `raId`) nunca é tocada.
+// - Nada é DESLIGADO: se você marcou algo manualmente, continua marcado.
+// - A data do RA só é aplicada onde ainda não existia uma (não sobrescreve
+//   a data que você registrou ao marcar na mão).
+export async function syncUnlocks(gameId, raGameId) {
+  const { username } = getRaConfig()
+  if (!username) throw new Error('err.ra.needUser')
+  if (!raGameId) throw new Error('err.ra.notLinked')
+
+  // `u` = usuário, `g` = id do jogo no RA
+  const progress = await request('API_GetGameInfoAndUserProgress.php', { u: username, g: raGameId })
+  const fonte = progress && progress.Achievements ? progress.Achievements : {}
+
+  const data = load()
+  const game = data.games.find((g) => g.id === gameId)
+  if (!game) throw new Error('err.gameNotFound')
+  if (!Array.isArray(game.achievements)) game.achievements = []
+
+  let novas = 0 // quantas passaram de bloqueada → desbloqueada agora
+  let vindasDoRa = 0 // quantas o RA confirma como desbloqueadas
+  let mudou = false
+  const porId = new Map()
+  for (const a of Object.values(fonte)) porId.set(String(a.ID), a)
+
+  for (const ach of game.achievements) {
+    if (!ach.raId) continue // conquista manual: fica como está
+    const meu = porId.get(String(ach.raId))
+    if (!meu) continue // o RA não devolveu essa (fora da set, por exemplo)
+
+    // A API devolve a data só quando VOCÊ desbloqueou; sem data = ainda não
+    const quando = paraIso(meu.DateEarned || meu.DateEarnedHardcore)
+    if (!quando) continue
+
+    vindasDoRa += 1
+    if (!ach.unlocked) {
+      ach.unlocked = true
+      if (!ach.unlockedAt) ach.unlockedAt = quando
+      novas += 1
+      mudou = true
+    } else if (!ach.unlockedAt) {
+      ach.unlockedAt = quando // já estava marcada, mas sem data registrada
+      mudou = true
+    }
+  }
+
+  if (mudou) save(data)
+  return { novas, vindasDoRa, total: game.achievements.length, username }
+}
+
 // Substitui as conquistas de um jogo pelas oficiais do RetroAchievements
 export async function importAchievements(gameId, raGameId) {
   const achievements = await getGameAchievements(raGameId)

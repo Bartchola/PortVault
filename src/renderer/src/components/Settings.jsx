@@ -203,6 +203,10 @@ export default function Settings({ updater }) {
           </button>
         </div>
 
+        {/* Nota embaixo do formulário (dentro do campo ela quebrava o
+            alinhamento dos dois inputs, que ficavam em alturas diferentes) */}
+        <p className="ra-form-hint">{t('settings.raUserHint')}</p>
+
         {raMsg && (
           <p className={`ra-status ${raStatus === 'error' ? 'error' : 'ok'}`}>
             {raStatus === 'error' ? '⚠️ ' : '✅ '}
