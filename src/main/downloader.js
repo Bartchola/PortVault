@@ -27,7 +27,7 @@ function downloadFile(url, destPath, onProgress) {
         return downloadFile(res.headers.location, destPath, onProgress).then(resolve, reject)
       }
       if (res.statusCode !== 200) {
-        return reject(new Error(`Servidor respondeu ${res.statusCode}`))
+        return reject(new Error(`err.download.http|${res.statusCode}`))
       }
 
       const total = parseInt(res.headers['content-length'] || '0', 10)

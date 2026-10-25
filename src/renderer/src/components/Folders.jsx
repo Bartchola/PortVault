@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useI18n } from '../i18n'
 
 export default function Folders() {
   const [folders, setFolders] = useState([])
   const [scanning, setScanning] = useState(false)
+  const { t } = useI18n()
 
   useEffect(() => { window.api.listFolders().then(setFolders) }, [])
 
@@ -18,23 +20,21 @@ export default function Folders() {
     setScanning(true)
     const result = await window.api.scanFolders()
     setScanning(false)
-    alert(`Scan concluído! ${result.added} jogo(s) novo(s) adicionado(s) à biblioteca.`)
+    alert(t('folders.scanDone', { added: result.added }))
   }
 
   return (
     <div>
       <header className="page-header">
-        <h1>Pastas de jogos</h1>
+        <h1>{t('folders.title')}</h1>
         <button className="btn primary" onClick={handleScan} disabled={scanning || folders.length === 0}>
-          {scanning ? 'Escaneando...' : '🔍 Escanear agora'}
+          {scanning ? t('folders.scanning') : t('folders.scanNow')}
         </button>
       </header>
 
-      <p className="muted">
-        Adicione as pastas onde seus ports e recomps estão. O PortVault procura os executáveis e monta sua biblioteca.
-      </p>
+      <p className="muted">{t('folders.hint')}</p>
 
-      <button className="btn" onClick={handleAdd}>+ Adicionar pasta</button>
+      <button className="btn" onClick={handleAdd}>{t('folders.add')}</button>
 
       <ul className="folder-list">
         {folders.map((folder) => (
@@ -45,7 +45,7 @@ export default function Folders() {
         ))}
       </ul>
 
-      {folders.length === 0 && <p className="muted">Nenhuma pasta adicionada ainda.</p>}
+      {folders.length === 0 && <p className="muted">{t('folders.empty')}</p>}
     </div>
   )
 }

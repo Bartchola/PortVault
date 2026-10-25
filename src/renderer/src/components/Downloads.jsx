@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import { useI18n } from '../i18n'
 
-const STAGE_LABEL = {
-  baixando: 'Baixando',
-  extraindo: 'Extraindo',
-  registrando: 'Adicionando à biblioteca',
-  concluido: 'Concluído ✅'
-}
+// Estágios que têm tradução própria (o downloader só emite esses)
+const KNOWN_STAGES = ['baixando', 'extraindo', 'registrando', 'concluido']
 
 export default function Downloads({ onInstalled }) {
   const [url, setUrl] = useState('')
   const [items, setItems] = useState([])
   const [busy, setBusy] = useState(false)
+  const { t, tr } = useI18n()
 
   // Escuta o progresso vindo do "cérebro" do launcher
   useEffect(() => {
@@ -28,7 +26,7 @@ export default function Downloads({ onInstalled }) {
     e.preventDefault()
     if (!url.trim() || busy) return
     setBusy(true)
-    setItems((prev) => [...prev, { key: url, fileName: 'Iniciando...', percent: 0, stage: 'baixando' }])
+    setItems((prev) => [...prev, { key: url, fileName: t('dl.starting'), percent: 0, stage: 'baixando' }])
 
     const result = await window.api.startDownload(url.trim())
     setBusy(false)
@@ -44,25 +42,23 @@ export default function Downloads({ onInstalled }) {
   return (
     <div>
       <header className="page-header">
-        <h1>Downloads</h1>
+        <h1>{t('dl.title')}</h1>
       </header>
 
       <form className="download-form" onSubmit={handleDownload}>
         <input
           type="url"
-          placeholder="Cole o link direto de um port/recomp (.zip ou .exe)..."
+          placeholder={t('dl.placeholder')}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
         />
         <button className="btn primary" disabled={busy}>
-          {busy ? 'Baixando...' : 'Baixar e instalar'}
+          {busy ? t('dl.downloading') : t('dl.downloadInstall')}
         </button>
       </form>
 
-      <p className="muted">
-        Funciona com links diretos (.zip, .exe). O jogo é extraído e adicionado à biblioteca automaticamente.
-      </p>
+      <p className="muted">{t('dl.hint')}</p>
 
       <div className="download-list">
         {items.map((item) => (
@@ -70,7 +66,9 @@ export default function Downloads({ onInstalled }) {
             <div className="download-info">
               <span className="download-name">{item.fileName}</span>
               <span className="download-stage">
-                {item.stage === 'erro' ? `Erro: ${item.error}` : STAGE_LABEL[item.stage] || item.stage}
+                {item.stage === 'erro'
+                  ? t('dl.error', { msg: tr(item.error) })
+                  : KNOWN_STAGES.includes(item.stage) ? t(`stage.${item.stage}`) : item.stage}
               </span>
             </div>
             <div className="progress-bar">

@@ -41,6 +41,10 @@ contextBridge.exposeInMainWorld('api', {
   raPreview: (raGameId) => ipcRenderer.invoke('ra:preview', raGameId),
   raImport: (gameId, raGameId) => ipcRenderer.invoke('ra:import', gameId, raGameId),
 
+  // Idioma do launcher
+  getLocale: () => ipcRenderer.invoke('locale:get'),
+  setLocale: (locale) => ipcRenderer.invoke('locale:set', locale),
+
   // Versão e atualizações
   getVersion: () => ipcRenderer.invoke('app:version'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),

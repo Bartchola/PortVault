@@ -17,7 +17,9 @@ const DEFAULT_DATA = {
   // Downloads feitos pelo launcher
   downloads: [],
   // Credenciais do RetroAchievements (para importar conquistas)
-  ra: { username: '', apiKey: '' }
+  ra: { username: '', apiKey: '' },
+  // Idioma do launcher ('pt' | 'en')
+  locale: 'pt'
 }
 
 function ensureDir() {
@@ -54,4 +56,18 @@ export function saveRaConfig({ username, apiKey }) {
   data.ra = { username: (username || '').trim(), apiKey: (apiKey || '').trim() }
   save(data)
   return data.ra
+}
+
+// Lê o idioma do launcher ('pt' | 'en'; padrão português)
+export function getLocale() {
+  const { locale } = load()
+  return locale === 'en' ? 'en' : 'pt'
+}
+
+// Salva o idioma do launcher
+export function setLocale(locale) {
+  const data = load()
+  data.locale = locale === 'en' ? 'en' : 'pt'
+  save(data)
+  return data.locale
 }

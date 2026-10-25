@@ -105,7 +105,7 @@ export function listAchievements() {
 
 // Cria uma nova conquista para um jogo
 export function addAchievement(gameId, { name, desc, icon }) {
-  if (!name || !name.trim()) throw new Error('Dê um nome para a conquista')
+  if (!name || !name.trim()) throw new Error('err.achievementNoName')
   const data = load()
   const game = findGame(data, gameId)
   const ach = {
@@ -135,7 +135,7 @@ export function toggleAchievement(gameId, achId) {
   const data = load()
   const game = findGame(data, gameId)
   const ach = game.achievements.find((a) => a.id === achId)
-  if (!ach) throw new Error('Conquista não encontrada')
+  if (!ach) throw new Error('err.achievementNotFound')
   ach.unlocked = !ach.unlocked
   ach.unlockedAt = ach.unlocked ? new Date().toISOString() : null
   save(data)

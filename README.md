@@ -8,11 +8,15 @@ O PortVault organiza os ports e recomps que você baixa da comunidade em um só 
 
 ---
 
-## ✨ Funcionalidades (MVP)
+## ✨ Funcionalidades
 
 - 🎮 **Biblioteca de jogos** — adiciona seus `.exe` manualmente ou escaneando pastas; abre o jogo com um clique.
 - ⬇️ **Download integrado** — cola o link direto de um port (`.zip`/`.exe`), ele baixa, extrai e adiciona à biblioteca sozinho.
 - 📁 **Pastas monitoradas** — aponte onde estão seus jogos e escaneie para encontrar novos ports automaticamente.
+- 🏆 **Conquistas estilo Steam** — desbloqueie manualmente e acompanhe o progresso de cada jogo, com resumo geral.
+- 🕹️ **RetroAchievements integrado** — vincule o jogo ao RA por busca ou link e importe as conquistas oficiais, com badges e pontos.
+- 🌐 **Português e inglês** — troque o idioma do launcher nas Configurações; as conquistas do RA são **traduzidas automaticamente** para o português (e o texto original continua disponível em inglês).
+- 🔄 **Atualização automática** — o launcher detecta a versão nova, baixa com barra de progresso e instala sozinho, sem abrir instalador.
 - 🎨 **Interface escura** estilo launcher, com capas e botão de jogar.
 
 ---

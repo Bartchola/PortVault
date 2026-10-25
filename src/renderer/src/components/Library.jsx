@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Cover from './Cover'
 import ImportRaModal from './ImportRaModal'
+import { useI18n } from '../i18n'
 
 export default function Library() {
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
   const [raFor, setRaFor] = useState(null) // jogo com modal de importação do RA aberto
+  const { t, tr } = useI18n()
 
   async function refresh() {
     setLoading(true)
@@ -19,7 +21,7 @@ export default function Library() {
     try {
       await window.api.launchGame(game.id)
     } catch (err) {
-      alert('Não foi possível abrir o jogo:\n' + err.message)
+      alert(t('library.launchError') + '\n' + tr(err.message))
     }
   }
 
@@ -29,7 +31,7 @@ export default function Library() {
   }
 
   async function handleRemove(game) {
-    if (confirm(`Remover "${game.name}" da biblioteca? (O jogo não será apagado do PC)`)) {
+    if (confirm(t('library.confirmRemove', { name: game.name }))) {
       setGames(await window.api.removeGame(game.id))
     }
   }
@@ -37,16 +39,18 @@ export default function Library() {
   return (
     <div>
       <header className="page-header">
-        <h1>Biblioteca</h1>
-        <button className="btn primary" onClick={handleAddManual}>+ Adicionar jogo</button>
+        <h1>{t('nav.library')}</h1>
+        <button className="btn primary" onClick={handleAddManual}>{t('library.add')}</button>
       </header>
 
-      {loading && <p className="muted">Carregando...</p>}
+      {loading && <p className="muted">{t('common.loading')}</p>}
 
       {!loading && games.length === 0 && (
         <div className="empty">
-          <p>Nenhum jogo na biblioteca ainda.</p>
-          <p className="muted">Vá em <b>Pastas</b> para escanear seus jogos, ou <b>Downloads</b> para instalar um port.</p>
+          <p>{t('library.empty')}</p>
+          <p className="muted">
+            {t('library.emptyHintA')}<b>{t('nav.folders')}</b>{t('library.emptyHintB')}<b>{t('nav.downloads')}</b>{t('library.emptyHintC')}
+          </p>
         </div>
       )}
 
@@ -57,14 +61,14 @@ export default function Library() {
               {game.coverPath
                 ? <img src={`file://${game.coverPath}`} alt={game.name} />
                 : <Cover name={game.name} />}
-              <button className="play-btn" title="Jogar" onClick={() => handleLaunch(game)}>▶</button>
+              <button className="play-btn" title={t('library.play')} onClick={() => handleLaunch(game)}>▶</button>
             </div>
             <div className="card-body">
               <p className="game-name" title={game.exePath}>{game.name}</p>
               <div className="card-actions">
-                <button className="btn small" title="Importar conquistas do RetroAchievements" onClick={() => setRaFor(game)}>🏆</button>
-                <button className="btn small" onClick={() => window.api.openGameFolder(game.id)}>📁</button>
-                <button className="btn small danger" onClick={() => handleRemove(game)}>✕</button>
+                <button className="btn small" title={t('library.importRa')} onClick={() => setRaFor(game)}>🏆</button>
+                <button className="btn small" title={t('library.openFolder')} onClick={() => window.api.openGameFolder(game.id)}>📁</button>
+                <button className="btn small danger" title={t('library.remove')} onClick={() => handleRemove(game)}>✕</button>
               </div>
             </div>
           </div>

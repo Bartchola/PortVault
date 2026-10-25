@@ -5,24 +5,21 @@ import Folders from './components/Folders'
 import Settings from './components/Settings'
 import Achievements from './components/Achievements'
 import UpdateModal from './components/UpdateModal'
+import { I18nProvider, useI18n } from './i18n'
 
 // Ícones em emoji pra não depender de biblioteca externa no MVP
 const ICONS = { library: '🎮', achievements: '🏆', downloads: '⬇️', folders: '📁', settings: '⚙️' }
 
-const TABS = [
-  ['library', 'Biblioteca'],
-  ['achievements', 'Conquistas'],
-  ['downloads', 'Downloads'],
-  ['folders', 'Pastas'],
-  ['settings', 'Configurações']
-]
+// Abas: a chave interna é fixa, o rótulo é traduzido pelo i18n
+const TABS = ['library', 'achievements', 'downloads', 'folders', 'settings']
 
-export default function App() {
+function Shell() {
   const [tab, setTab] = useState('library')
   const [version, setVersion] = useState('...')
   const [updateInfo, setUpdateInfo] = useState(null) // dados pro pop-up (versão disponível)
   const [upPhase, setUpPhase] = useState('idle') // idle | downloading | installing | error
   const [upProgress, setUpProgress] = useState(0) // 0-100 durante o download
+  const { t } = useI18n()
 
   // Busca a versão real (do package.json) pro rodapé nunca dessincronizar
   useEffect(() => {
@@ -82,13 +79,13 @@ export default function App() {
           <span className="logo-text">PortVault</span>
         </div>
         <nav>
-          {TABS.map(([key, label]) => (
+          {TABS.map((key) => (
             <button
               key={key}
               className={`nav-btn ${tab === key ? 'active' : ''}`}
               onClick={() => setTab(key)}
             >
-              <span>{ICONS[key]}</span> {label}
+              <span>{ICONS[key]}</span> {t(`nav.${key}`)}
             </button>
           ))}
         </nav>
@@ -106,5 +103,15 @@ export default function App() {
       {/* Pop-up de nova versão, se houver atualização disponível */}
       <UpdateModal updater={updater} />
     </div>
+  )
+}
+
+// O provider de idioma envolve o app inteiro: todos os componentes leem o
+// idioma salvo e re-renderizam quando ele muda.
+export default function App() {
+  return (
+    <I18nProvider>
+      <Shell />
+    </I18nProvider>
   )
 }

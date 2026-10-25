@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useI18n, pickAchievement } from '../i18n'
 
 // Lê o ID do jogo de uma URL (retroachievements.org/game/12345) ou de um número
 function parseGameId(input) {
@@ -25,7 +26,8 @@ export default function ImportRaModal({ game, onClose, onImported }) {
   const [previewLoading, setPreviewLoading] = useState(false)
   const [importing, setImporting] = useState(false)
   const [done, setDone] = useState(null) // total importado
-  const [error, setError] = useState('')
+  const [error, setError] = useState('') // chave de erro ou mensagem crua
+  const { t, tr, lang } = useI18n()
 
   // Ao abrir: vê se tem chave salva e carrega os consoles
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function ImportRaModal({ game, onClose, onImported }) {
   }, [])
 
   async function handleSearch() {
-    if (!consoleId) { setError('Escolha o console primeiro.'); return }
+    if (!consoleId) { setError('ra.pickConsoleFirst'); return }
     setError(''); setSearching(true); setResults([]); setSelected(null); setPreview(null)
     try { setResults(await window.api.raSearch(query, consoleId)) }
     catch (e) { setError(e.message) }
@@ -51,7 +53,7 @@ export default function ImportRaModal({ game, onClose, onImported }) {
     try {
       const ach = await window.api.raPreview(id)
       setPreview(ach)
-      if (ach.length === 0) setError('Esse jogo não retornou conquistas.')
+      if (ach.length === 0) setError('ra.noAchievements')
     } catch (e) { setError(e.message) }
     finally { setPreviewLoading(false) }
   }
@@ -59,7 +61,7 @@ export default function ImportRaModal({ game, onClose, onImported }) {
   function handleUseLink() {
     const id = parseGameId(linkInput)
     if (!id) {
-      setError('Não consegui ler o ID. Cole o link tipo retroachievements.org/game/12345 (ou só o número).')
+      setError('ra.badLink')
       return
     }
     pickRaGame(id, `Jogo #${id}`)
@@ -85,33 +87,33 @@ export default function ImportRaModal({ game, onClose, onImported }) {
         {done !== null ? (
           <>
             <div className="modal-icon">✅</div>
-            <h2>Conquistas importadas!</h2>
+            <h2>{t('ra.doneTitle')}</h2>
             <p className="modal-text">
-              <b>{done}</b> conquistas do RetroAchievements foram adicionadas a <b>{game.name}</b>.
+              <b>{done}</b>{t('ra.doneBody')}<b>{game.name}</b>.
             </p>
             <div className="modal-actions">
-              <button className="btn primary" onClick={onClose}>Fechar</button>
+              <button className="btn primary" onClick={onClose}>{t('common.close')}</button>
             </div>
           </>
         ) : configured === null ? (
-          <p className="modal-text">Carregando...</p>
+          <p className="modal-text">{t('common.loading')}</p>
         ) : configured === false ? (
           <>
             <div className="modal-icon">🕹️</div>
-            <h2>RetroAchievements não conectado</h2>
+            <h2>{t('ra.notConnectedTitle')}</h2>
             <p className="modal-text">
-              Antes de importar, conecte sua conta em <b>Configurações → RetroAchievements</b>.
+              {t('ra.notConnectedBody')}<b>{t('ra.notConnectedWhere')}</b>.
             </p>
             <div className="modal-actions">
-              <button className="btn primary" onClick={onClose}>Entendi</button>
+              <button className="btn primary" onClick={onClose}>{t('ra.gotIt')}</button>
             </div>
           </>
         ) : (
           <>
             <div className="modal-icon">🏆</div>
-            <h2>Importar conquistas</h2>
+            <h2>{t('ra.importTitle')}</h2>
             <p className="modal-text">
-              Jogo: <b>{game.name}</b> — escolha a versão certa no RetroAchievements.
+              {t('ra.chooseGameA')}<b>{game.name}</b>{t('ra.chooseGameB')}
             </p>
 
             {/* Só mostra o passo de escolha se ainda não escolheu */}
@@ -119,27 +121,27 @@ export default function ImportRaModal({ game, onClose, onImported }) {
               <>
                 <div className="ra-tabs">
                   <button className={`ra-tab ${mode === 'search' ? 'active' : ''}`} onClick={() => setMode('search')}>
-                    🔎 Buscar por nome
+                    {t('ra.tabSearch')}
                   </button>
                   <button className={`ra-tab ${mode === 'link' ? 'active' : ''}`} onClick={() => setMode('link')}>
-                    🔗 Colar link
+                    {t('ra.tabLink')}
                   </button>
                 </div>
 
                 {mode === 'search' ? (
                   <div className="ra-search">
                     <select value={consoleId} onChange={(e) => setConsoleId(e.target.value)}>
-                      <option value="">Escolha o console...</option>
+                      <option value="">{t('ra.chooseConsole')}</option>
                       {consoles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                     <input
                       value={query}
-                      placeholder="Nome do jogo"
+                      placeholder={t('ra.gameName')}
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
                     <button className="btn primary" onClick={handleSearch} disabled={searching}>
-                      {searching ? 'Buscando...' : 'Buscar'}
+                      {searching ? t('common.searching') : t('common.search')}
                     </button>
                   </div>
                 ) : (
@@ -150,7 +152,7 @@ export default function ImportRaModal({ game, onClose, onImported }) {
                       onChange={(e) => setLinkInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleUseLink()}
                     />
-                    <button className="btn primary" onClick={handleUseLink}>Usar</button>
+                    <button className="btn primary" onClick={handleUseLink}>{t('ra.use')}</button>
                   </div>
                 )}
 
@@ -165,35 +167,37 @@ export default function ImportRaModal({ game, onClose, onImported }) {
                   </div>
                 )}
                 {mode === 'search' && !searching && query && consoleId && results.length === 0 && !error && (
-                  <p className="muted ra-hint">Nada encontrado. Tente outro nome ou a aba “Colar link”.</p>
+                  <p className="muted ra-hint">{t('ra.notFound')}</p>
                 )}
               </>
             ) : (
               /* ---------- Prévia + confirmar ---------- */
               <div className="ra-preview">
                 <p className="ra-preview-title">{selected.title}</p>
-                {previewLoading && <p className="muted">Buscando conquistas...</p>}
+                {previewLoading && <p className="muted">{t('ra.fetchingAchievements')}</p>}
                 {preview && preview.length > 0 && (
                   <>
                     <p className="ra-preview-count">
-                      <b>{preview.length}</b> conquistas encontradas. Substituir as atuais?
+                      <b>{preview.length}</b>{t('ra.foundCount')}
                     </p>
                     <ul className="ra-preview-list">
-                      {preview.slice(0, 4).map((a, i) => <li key={i}>{a.name}</li>)}
-                      {preview.length > 4 && <li className="muted">... e mais {preview.length - 4}</li>}
+                      {preview.slice(0, 4).map((a, i) => (
+                        <li key={i}>{pickAchievement(lang, a.name, a.namePt)}</li>
+                      ))}
+                      {preview.length > 4 && <li className="muted">{t('ra.more', { n: preview.length - 4 })}</li>}
                     </ul>
                   </>
                 )}
                 <div className="modal-actions">
-                  <button className="btn" onClick={back} disabled={importing}>← Voltar</button>
+                  <button className="btn" onClick={back} disabled={importing}>{t('common.back')}</button>
                   <button className="btn primary" onClick={handleImport} disabled={importing || previewLoading || !preview?.length}>
-                    {importing ? 'Importando...' : `Importar ${preview?.length || 0} conquistas`}
+                    {importing ? t('ra.importing') : t('ra.importN', { n: preview?.length || 0 })}
                   </button>
                 </div>
               </div>
             )}
 
-            {error && <p className="ra-status error">⚠️ {error}</p>}
+            {error && <p className="ra-status error">⚠️ {tr(error)}</p>}
           </>
         )}
       </div>

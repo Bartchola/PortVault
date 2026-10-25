@@ -7,7 +7,7 @@
 
 import path from 'path'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
-import { load, save, getRaConfig, saveRaConfig } from './store.js'
+import { load, save, getRaConfig, saveRaConfig, getLocale, setLocale } from './store.js'
 import { scanFolder } from './scanner.js'
 import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
@@ -79,7 +79,7 @@ ipcMain.handle('library:remove', (_e, id) => {
 
 ipcMain.handle('library:launch', (_e, id) => {
   const game = load().games.find((g) => g.id === id)
-  if (!game) throw new Error('Jogo não encontrado')
+  if (!game) throw new Error('err.gameNotFound')
   return launchGame(game)
 })
 
@@ -102,6 +102,10 @@ ipcMain.handle('achievements:toggle', (_e, gameId, achId) => toggleAchievement(g
 
 // Lê/salva as credenciais (usuário + chave de API)
 ipcMain.handle('ra:config:get', () => getRaConfig())
+
+// Idioma do launcher (lido pelo provider de i18n no início)
+ipcMain.handle('locale:get', () => getLocale())
+ipcMain.handle('locale:set', (_e, locale) => setLocale(locale))
 ipcMain.handle('ra:config:save', (_e, cfg) => saveRaConfig(cfg))
 
 // Valida a chave (baixa a lista de consoles se der certo)

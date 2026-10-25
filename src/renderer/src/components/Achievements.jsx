@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Cover from './Cover'
+import { useI18n, pickAchievement } from '../i18n'
 
 // Recalcula o resumo geral a partir da lista de jogos (usado após cada
 // mudança, senão a barra do topo fica defasada)
@@ -8,11 +9,11 @@ function summarize(games) {
   return { unlocked: all.filter((a) => a.unlocked).length, total: all.length }
 }
 
-// Formata a data de desbloqueio no padrão brasileiro
-function fmtDate(iso) {
+// Formata a data de desbloqueio no padrão do idioma escolhido
+function fmtDate(iso, lang) {
   if (!iso) return ''
   try {
-    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    return new Date(iso).toLocaleDateString(lang === 'en' ? 'en-US' : 'pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
   } catch {
     return ''
   }
@@ -24,6 +25,7 @@ export default function Achievements() {
   const [expanded, setExpanded] = useState(null) // id do jogo aberto
   const [addingFor, setAddingFor] = useState(null) // id do jogo com formulário aberto
   const [form, setForm] = useState({ icon: '🏆', name: '', desc: '' })
+  const { t, lang } = useI18n()
 
   async function refresh() {
     setLoading(true)
@@ -71,14 +73,14 @@ export default function Achievements() {
   return (
     <div>
       <header className="page-header">
-        <h1>Conquistas</h1>
+        <h1>{t('ach.title')}</h1>
       </header>
 
       {/* ---------- Resumo geral ---------- */}
       <div className="ach-summary">
         <div className="ach-summary-info">
           <span className="ach-summary-num">{summary.unlocked}</span>
-          <span className="ach-summary-total">/ {summary.total} desbloqueadas</span>
+          <span className="ach-summary-total">{t('ach.summaryOf', { total: summary.total })}</span>
         </div>
         <div className="progress-bar ach-summary-bar">
           <div className="progress-fill" style={{ width: `${pct}%` }} />
@@ -86,12 +88,12 @@ export default function Achievements() {
         <span className="ach-summary-pct">{pct}%</span>
       </div>
 
-      {loading && <p className="muted">Carregando...</p>}
+      {loading && <p className="muted">{t('common.loading')}</p>}
 
       {!loading && data.games.length === 0 && (
         <div className="empty">
-          <p>Nenhum jogo na biblioteca ainda.</p>
-          <p className="muted">Adicione jogos na <b>Biblioteca</b> para ver as conquistas de cada um.</p>
+          <p>{t('ach.empty')}</p>
+          <p className="muted">{t('ach.emptyHintA')}<b>{t('nav.library')}</b>{t('ach.emptyHintB')}</p>
         </div>
       )}
 
@@ -124,7 +126,7 @@ export default function Achievements() {
               {isOpen && (
                 <div className="ach-list">
                   {game.achievements.length === 0 && (
-                    <p className="muted ach-empty-game">Este jogo ainda não tem conquistas.</p>
+                    <p className="muted ach-empty-game">{t('ach.emptyGame')}</p>
                   )}
 
                   {game.achievements.map((ach) => (
@@ -151,19 +153,23 @@ export default function Achievements() {
                         {!ach.unlocked && <span className="ach-lock">🔒</span>}
                       </div>
                       <div className="ach-info">
-                        <p className="ach-name">{ach.name}{ach.points ? <span className="ach-points">{ach.points} pts</span> : null}</p>
-                        <p className="ach-desc">{ach.desc}</p>
-                        {ach.unlocked && <p className="ach-date">Desbloqueada em {fmtDate(ach.unlockedAt)}</p>}
+                        {/* Em português usa a tradução salva; em inglês, o original */}
+                        <p className="ach-name">
+                          {pickAchievement(lang, ach.name, ach.namePt)}
+                          {ach.points ? <span className="ach-points">{t('ach.pts', { points: ach.points })}</span> : null}
+                        </p>
+                        <p className="ach-desc">{pickAchievement(lang, ach.desc, ach.descPt)}</p>
+                        {ach.unlocked && <p className="ach-date">{t('ach.unlockedAt', { date: fmtDate(ach.unlockedAt, lang) })}</p>}
                       </div>
                       <div className="ach-actions">
                         <button
                           className="btn small"
-                          title={ach.unlocked ? 'Marcar como bloqueada' : 'Desbloquear'}
+                          title={ach.unlocked ? t('ach.markLocked') : t('ach.unlock')}
                           onClick={() => handleToggle(game.id, ach.id)}
                         >
                           {ach.unlocked ? '🔒' : '🔓'}
                         </button>
-                        <button className="btn small danger" title="Remover conquista" onClick={() => handleRemove(game.id, ach.id)}>
+                        <button className="btn small danger" title={t('ach.remove')} onClick={() => handleRemove(game.id, ach.id)}>
                           ✕
                         </button>
                       </div>
@@ -177,27 +183,27 @@ export default function Achievements() {
                         className="ach-form-icon"
                         maxLength={2}
                         value={form.icon}
-                        title="Emoji da conquista"
+                        title={t('ach.formEmoji')}
                         onChange={(e) => setForm({ ...form, icon: e.target.value })}
                       />
                       <input
                         className="ach-form-name"
-                        placeholder="Nome da conquista"
+                        placeholder={t('ach.formName')}
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                       />
                       <input
                         className="ach-form-desc"
-                        placeholder="Descrição (opcional)"
+                        placeholder={t('ach.formDesc')}
                         value={form.desc}
                         onChange={(e) => setForm({ ...form, desc: e.target.value })}
                       />
-                      <button className="btn primary small" onClick={() => handleAdd(game.id)}>Salvar</button>
-                      <button className="btn small" onClick={() => setAddingFor(null)}>Cancelar</button>
+                      <button className="btn primary small" onClick={() => handleAdd(game.id)}>{t('common.save')}</button>
+                      <button className="btn small" onClick={() => setAddingFor(null)}>{t('common.cancel')}</button>
                     </div>
                   ) : (
                     <button className="btn small ach-add-btn" onClick={() => openAdd(game.id)}>
-                      + Adicionar conquista
+                      {t('ach.add')}
                     </button>
                   )}
                 </div>
