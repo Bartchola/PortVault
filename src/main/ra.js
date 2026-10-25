@@ -168,3 +168,37 @@ export async function importAchievements(gameId, raGameId) {
   save(data)
   return { count: game.achievements.length, achievements: game.achievements.map((a) => ({ ...a })) }
 }
+
+// Traduz conquistas importadas ANTES de a tradução existir (bibliotecas antigas).
+// Roda em segundo plano na abertura do launcher e só mexe nas conquistas do RA
+// (as que têm `raId`) que estão sem `namePt` — conquistas criadas à mão nunca
+// são tocadas. Se falhar, tenta de novo na próxima abertura.
+export async function backfillTranslations() {
+  const data = load()
+  let mudou = false
+
+  for (const game of data.games) {
+    if (!game.raGameId || !Array.isArray(game.achievements) || game.achievements.length === 0) continue
+    const pendentes = game.achievements.filter((a) => a.raId && !(a.namePt || '').trim())
+    if (pendentes.length === 0) continue
+
+    const metade = pendentes.length
+    const traduzido = await translateList([
+      ...pendentes.map((a) => a.name || ''),
+      ...pendentes.map((a) => a.desc || '')
+    ])
+    if (!traduzido) {
+      console.log(`[PortVault] tradução de "${game.name}" pendente (nova tentativa na próxima abertura)`)
+      continue
+    }
+    pendentes.forEach((a, i) => {
+      a.namePt = traduzido[i] || ''
+      a.descPt = traduzido[i + metade] || ''
+    })
+    mudou = true
+    console.log(`[PortVault] traduzidas ${pendentes.length} conquistas de "${game.name}"`)
+  }
+
+  if (mudou) save(data)
+  return mudou
+}

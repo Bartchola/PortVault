@@ -13,7 +13,7 @@ import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
 import { checkForUpdates, downloadUpdate, installUpdate, openReleasePage } from './updater.js'
 import { listAchievements, addAchievement, removeAchievement, toggleAchievement } from './achievements.js'
-import { verifyAccount, getConsoles, searchGames, importAchievements, getGameAchievements } from './ra.js'
+import { verifyAccount, getConsoles, searchGames, importAchievements, getGameAchievements, backfillTranslations } from './ra.js'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -42,6 +42,11 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  // Traduz em segundo plano as conquistas do RA importadas antes da tradução
+  // existir. Não segura a abertura: se houver pendência, resolve sozinho e só
+  // escreve o library.json quando algo muda.
+  backfillTranslations().catch((e) => console.log(`[PortVault] tradução pendente falhou: ${e.message}`))
 })
 
 app.on('window-all-closed', () => {
