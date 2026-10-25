@@ -157,6 +157,39 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .update-progress { margin-top: 8px; height: 6px; }
 .update-status .btn { margin-left: auto; }
 
+/* ---------- RetroAchievements ---------- */
+.ra-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 14px; }
+.ra-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+.ra-field label { font-size: 12px; color: var(--muted); }
+.ra-status { margin-top: 12px; font-size: 13px; }
+.ra-status.ok { color: #3fb950; }
+.ra-status.error { color: var(--danger); }
+
+/* Modal de importação */
+.ra-modal { max-width: 560px; }
+.ra-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.ra-tab {
+  flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); cursor: pointer; font-size: 13px;
+}
+.ra-tab.active { background: var(--surface-2); color: var(--text); border-color: var(--accent); }
+.ra-search { display: flex; gap: 8px; margin-bottom: 12px; }
+.ra-search input, .ra-search select { flex: 1; min-width: 0; }
+.ra-results { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.ra-result {
+  text-align: left; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text); cursor: pointer; font-size: 13px;
+}
+.ra-result:hover { border-color: var(--accent); background: var(--surface-2); }
+.ra-hint { font-size: 13px; margin-top: 4px; }
+.ra-preview-title { font-weight: 700; margin-bottom: 8px; }
+.ra-preview-count { font-size: 14px; margin-bottom: 8px; }
+.ra-preview-list { margin: 0 0 18px; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+/* Ícone de conquista (badge do RA) e contador de pontos */
+.ach-icon-img { width: 36px; height: 36px; border-radius: 6px; display: block; }
+.ach-points { margin-left: 8px; font-size: 11px; color: var(--muted); font-weight: 400; }
+
 /* ---------- Conquistas ---------- */
 .ach-summary {
   display: flex; align-items: center; gap: 16px;

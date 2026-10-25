@@ -15,7 +15,9 @@ const DEFAULT_DATA = {
   // Jogos encontrados/adicionados: { id, name, exePath, coverPath?, addedAt }
   games: [],
   // Downloads feitos pelo launcher
-  downloads: []
+  downloads: [],
+  // Credenciais do RetroAchievements (para importar conquistas)
+  ra: { username: '', apiKey: '' }
 }
 
 function ensureDir() {
@@ -38,4 +40,18 @@ export function save(data) {
 export function getImagesDir() {
   ensureDir()
   return DATA_DIR
+}
+
+// Lê as credenciais do RetroAchievements
+export function getRaConfig() {
+  const { ra } = load()
+  return { username: ra?.username || '', apiKey: ra?.apiKey || '' }
+}
+
+// Salva as credenciais do RetroAchievements
+export function saveRaConfig({ username, apiKey }) {
+  const data = load()
+  data.ra = { username: (username || '').trim(), apiKey: (apiKey || '').trim() }
+  save(data)
+  return data.ra
 }

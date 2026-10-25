@@ -13,6 +13,10 @@ export default function Settings({ updater }) {
   const [status, setStatus] = useState('idle')
   const [info, setInfo] = useState(null)
   const [version, setVersion] = useState('...')
+  // RetroAchievements (credenciais + estado da conexão)
+  const [ra, setRa] = useState({ username: '', apiKey: '' })
+  const [raStatus, setRaStatus] = useState('idle') // idle | checking | ok | error
+  const [raMsg, setRaMsg] = useState('')
 
   const phase = updater?.phase || 'idle'
   const progress = updater?.progress || 0
@@ -24,6 +28,29 @@ export default function Settings({ updater }) {
   useEffect(() => {
     window.api.getVersion().then(setVersion)
   }, [])
+
+  // Carrega as credenciais salvas do RetroAchievements
+  useEffect(() => {
+    window.api.raConfigGet().then((cfg) => {
+      setRa({ username: cfg.username || '', apiKey: cfg.apiKey || '' })
+      if (cfg.apiKey) setRaStatus('ok') // já tinha chave salva
+    })
+  }, [])
+
+  // Salva e valida a chave do RetroAchievements
+  async function handleRaConnect() {
+    setRaStatus('checking')
+    setRaMsg('')
+    await window.api.raConfigSave(ra)
+    const result = await window.api.raVerify()
+    if (result.ok) {
+      setRaStatus('ok')
+      setRaMsg(`Conectado! ${result.consoles} consoles disponíveis.`)
+    } else {
+      setRaStatus('error')
+      setRaMsg(result.error)
+    }
+  }
 
   async function handleCheck() {
     setStatus('checking')
@@ -109,6 +136,54 @@ export default function Settings({ updater }) {
               <button className="btn primary" onClick={updater.start}>⬇ Atualizar</button>
             ) : null}
           </div>
+        )}
+      </section>
+
+      {/* ---------- RetroAchievements ---------- */}
+      <section className="settings-section">
+        <h2>🕹️ RetroAchievements</h2>
+        <div className="setting-card">
+          <div className="setting-info">
+            <p className="setting-label">Importar conquistas oficiais</p>
+            <p className="setting-desc">
+              Conecte sua conta pra puxar as conquistas do RetroAchievements
+              para os seus jogos. Pega a sua chave em{' '}
+              <b>retroachievements.org → Settings → Web API</b>.
+            </p>
+          </div>
+        </div>
+
+        <div className="ra-form">
+          <div className="ra-field">
+            <label>Usuário (opcional)</label>
+            <input
+              placeholder="Seu usuário do RA"
+              value={ra.username}
+              onChange={(e) => setRa({ ...ra, username: e.target.value })}
+            />
+          </div>
+          <div className="ra-field">
+            <label>Chave de API *</label>
+            <input
+              type="password"
+              placeholder="Chave do Web API"
+              value={ra.apiKey}
+              onChange={(e) => setRa({ ...ra, apiKey: e.target.value })}
+            />
+          </div>
+          <button
+            className="btn primary"
+            onClick={handleRaConnect}
+            disabled={raStatus === 'checking'}
+          >
+            {raStatus === 'checking' ? 'Conectando...' : 'Conectar'}
+          </button>
+        </div>
+
+        {raMsg && (
+          <p className={`ra-status ${raStatus === 'error' ? 'error' : 'ok'}`}>
+            {raStatus === 'error' ? '⚠️ ' : '✅ '}{raMsg}
+          </p>
         )}
       </section>
 

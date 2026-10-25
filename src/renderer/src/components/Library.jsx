@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Cover from './Cover'
+import ImportRaModal from './ImportRaModal'
 
 export default function Library() {
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
+  const [raFor, setRaFor] = useState(null) // jogo com modal de importação do RA aberto
 
   async function refresh() {
     setLoading(true)
@@ -60,6 +62,7 @@ export default function Library() {
             <div className="card-body">
               <p className="game-name" title={game.exePath}>{game.name}</p>
               <div className="card-actions">
+                <button className="btn small" title="Importar conquistas do RetroAchievements" onClick={() => setRaFor(game)}>🏆</button>
                 <button className="btn small" onClick={() => window.api.openGameFolder(game.id)}>📁</button>
                 <button className="btn small danger" onClick={() => handleRemove(game)}>✕</button>
               </div>
@@ -67,6 +70,11 @@ export default function Library() {
           </div>
         ))}
       </div>
+
+      {/* Modal de importação do RetroAchievements */}
+      {raFor && (
+        <ImportRaModal game={raFor} onClose={() => setRaFor(null)} onImported={refresh} />
+      )}
     </div>
   )
 }

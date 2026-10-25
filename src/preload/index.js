@@ -32,6 +32,15 @@ contextBridge.exposeInMainWorld('api', {
   removeAchievement: (gameId, achId) => ipcRenderer.invoke('achievements:remove', gameId, achId),
   toggleAchievement: (gameId, achId) => ipcRenderer.invoke('achievements:toggle', gameId, achId),
 
+  // RetroAchievements (importar conquistas)
+  raConfigGet: () => ipcRenderer.invoke('ra:config:get'),
+  raConfigSave: (cfg) => ipcRenderer.invoke('ra:config:save', cfg),
+  raVerify: () => ipcRenderer.invoke('ra:verify'),
+  raConsoles: () => ipcRenderer.invoke('ra:consoles'),
+  raSearch: (query, consoleId) => ipcRenderer.invoke('ra:search', query, consoleId),
+  raPreview: (raGameId) => ipcRenderer.invoke('ra:preview', raGameId),
+  raImport: (gameId, raGameId) => ipcRenderer.invoke('ra:import', gameId, raGameId),
+
   // Versão e atualizações
   getVersion: () => ipcRenderer.invoke('app:version'),
   checkForUpdates: () => ipcRenderer.invoke('updates:check'),

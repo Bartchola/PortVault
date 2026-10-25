@@ -7,12 +7,13 @@
 
 import path from 'path'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
-import { load, save } from './store.js'
+import { load, save, getRaConfig, saveRaConfig } from './store.js'
 import { scanFolder } from './scanner.js'
 import { launchGame, openGameFolder } from './launcher.js'
 import { downloadAndInstall } from './downloader.js'
 import { checkForUpdates, downloadUpdate, installUpdate, openReleasePage } from './updater.js'
 import { listAchievements, addAchievement, removeAchievement, toggleAchievement } from './achievements.js'
+import { verifyAccount, getConsoles, searchGames, importAchievements, getGameAchievements } from './ra.js'
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -96,6 +97,25 @@ ipcMain.handle('achievements:add', (_e, gameId, payload) => addAchievement(gameI
 ipcMain.handle('achievements:remove', (_e, gameId, achId) => removeAchievement(gameId, achId))
 
 ipcMain.handle('achievements:toggle', (_e, gameId, achId) => toggleAchievement(gameId, achId))
+
+// ---------- IPC: RetroAchievements ----------
+
+// Lê/salva as credenciais (usuário + chave de API)
+ipcMain.handle('ra:config:get', () => getRaConfig())
+ipcMain.handle('ra:config:save', (_e, cfg) => saveRaConfig(cfg))
+
+// Valida a chave (baixa a lista de consoles se der certo)
+ipcMain.handle('ra:verify', () => verifyAccount())
+
+// Lista de consoles (filtro da busca) e busca de jogos por nome
+ipcMain.handle('ra:consoles', () => getConsoles())
+ipcMain.handle('ra:search', (_e, query, consoleId) => searchGames(query, consoleId))
+
+// Substitui as conquistas de um jogo pelas oficiais do RA
+ipcMain.handle('ra:import', (_e, gameId, raGameId) => importAchievements(gameId, raGameId))
+
+// Prévia: busca as conquistas de um jogo do RA sem salvar (mostra o total)
+ipcMain.handle('ra:preview', (_e, raGameId) => getGameAchievements(raGameId))
 
 // ---------- IPC: pastas monitoradas ----------
 

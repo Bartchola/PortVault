@@ -130,11 +130,28 @@ export default function Achievements() {
                   {game.achievements.map((ach) => (
                     <div className={`ach-row ${ach.unlocked ? 'unlocked' : 'locked'}`} key={ach.id}>
                       <div className="ach-icon">
-                        <span className="ach-icon-emoji">{ach.icon}</span>
+                        {ach.iconUrl ? (
+                          <>
+                            {/* Badge do RetroAchievements; se a imagem falhar,
+                                esconde e mostra o emoji no lugar */}
+                            <img
+                              className="ach-icon-img"
+                              src={ach.iconUrl}
+                              alt=""
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                                if (e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'block'
+                              }}
+                            />
+                            <span className="ach-icon-emoji" style={{ display: 'none' }}>{ach.icon || '🏆'}</span>
+                          </>
+                        ) : (
+                          <span className="ach-icon-emoji">{ach.icon}</span>
+                        )}
                         {!ach.unlocked && <span className="ach-lock">🔒</span>}
                       </div>
                       <div className="ach-info">
-                        <p className="ach-name">{ach.name}</p>
+                        <p className="ach-name">{ach.name}{ach.points ? <span className="ach-points">{ach.points} pts</span> : null}</p>
                         <p className="ach-desc">{ach.desc}</p>
                         {ach.unlocked && <p className="ach-date">Desbloqueada em {fmtDate(ach.unlockedAt)}</p>}
                       </div>
